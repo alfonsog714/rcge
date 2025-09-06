@@ -5,12 +5,12 @@
 #include <platform/platform.h>
 
 int main(void) {
-    RCFATAL("A test message: %f\n", 3.14f);
-    RCERROR("A test message: %f\n", 3.14f);
-    RCWARN("A test message: %f\n", 3.14f);
-    RCINFO("A test message: %f\n", 3.14f);
-    RCDEBUG("A test message: %f\n", 3.14f);
-    RCTRACE("A test message: %f\n", 3.14f);
+    RCFATAL("A test message: %f", 3.14f);
+    RCERROR("A test message: %f", 3.14f);
+    RCWARN("A test message: %f", 3.14f);
+    RCINFO("A test message: %f", 3.14f);
+    RCDEBUG("A test message: %f", 3.14f);
+    RCTRACE("A test message: %f", 3.14f);
 
     platform_state state;
     if (platform_startup(&state, "RCGE Testbed", 100, 100, 1280, 720)) {
