@@ -44,7 +44,6 @@ RCAPI void report_assertion_failure(const char* expression, const char* message,
 #else
 #define RCASSERT_DEBUG(expr) // do nothing
 #endif
-
 #else
 // RCASSERTIONS_ENABLED is false
 #define RCASSERT(expr)

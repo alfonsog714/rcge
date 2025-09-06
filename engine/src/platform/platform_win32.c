@@ -14,6 +14,9 @@ typedef struct internal_state {
     HWND hwnd;
 } internal_state;
 
+static f64 clock_frequency;
+static LARGE_INTEGER start_time;
+
 LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param);
 
 b8 platform_startup(
@@ -91,6 +94,12 @@ b8 platform_startup(
         i32 show_window_command_flags = should_activate ? SW_SHOW : SW_SHOWNOACTIVATE;
         ShowWindow(state->hwnd, show_window_command_flags);
 
+        // Clock setup
+        LARGE_INTEGER frequency;
+        QueryPerformanceFrequency(&frequency);
+        clock_frequency = 1.0 / (f64)frequency.QuadPart;
+        QueryPerformanceCounter(&start_time);
+
         return TRUE;
 }
 
@@ -148,7 +157,81 @@ void platform_console_write(const char* message, u8 color) {
 }
 
 void platform_console_write_error(const char* message, u8 color) {
+    HANDLE console_handle = GetStdHandle(STD_ERROR_HANDLE);
 
+    // FATAL, ERROR, WARN, INFO, DEBUG, TRACE
+    static u8 levels[6] = {64, 4, 6, 2, 1, 8};
+    SetConsoleTextAttribute(console_handle, levels[color]);
+
+    OutputDebugStringA(message);
+    u64 length = strlen(message);
+    LPDWORD number_written = 0;
+    WriteConsoleA(console_handle, message, (DWORD)length, number_written, 0);
 }
 
-#endif
+f64 platform_get_absolute_time() {
+    LARGE_INTEGER now_time;
+    QueryPerformanceCounter(&now_time);
+    return (f64)now_time.QuadPart * clock_frequency;
+}
+
+void platform_sleep(u64 ms) {
+    Sleep(ms);
+}
+
+LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param) {
+    switch (msg) {
+        case WM_ERASEBKGND:
+            // Notify the OS that erasing will be handled by the application to prevent flicker.
+            return 1;
+        case WM_CLOSE:
+            // TODO: Fire an event for the application to quit.
+            return 0;
+        case WM_DESTROY:
+            PostQuitMessage(0);
+            return 0;
+        case WM_SIZE: {
+            // Get updated size
+            // RECT r;
+            // GetClientRect(hwnd, &r);
+            // u32 width = r.right - r.left;
+            // u32 height = r.bottom - r.top;
+
+            // TODO: Fire an event for window resize
+        } break;
+        case WM_KEYDOWN:
+        case WM_SYSKEYDOWN:
+        case WM_KEYUP:
+        case WM_SYSKEYUP: {
+            // key pressed / released
+            // b8 pressed = (msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN);
+            // TODO: input processing
+        } break;
+        case WM_MOUSEMOVE: {
+            // i32 x_position = GET_X_LPARAM(l_param);
+            // i32 y_position = GET_Y_LPARAM(l_param);
+            // TODO: input processing
+        } break;
+        case WM_MOUSEWHEEL: {
+            i32 z_delta = GET_WHEEL_DELTA_WPARAM(w_param);
+            if (z_delta != 0) {
+                // flatten the input to (-1, 1)
+                // z_delta = (z_delta < 0) ? -1 : 1;
+                // // TODO: input processing
+            }
+        } break;
+        case WM_LBUTTONDOWN:
+        case WM_MBUTTONDOWN:
+        case WM_RBUTTONDOWN:
+        case WM_LBUTTONUP:
+        case WM_MBUTTONUP:
+        case WM_RBUTTONUP: {
+            // b8 pressed = msg == WM_LBUTTONDOWN || msg == WM_RBUTTONDOWN || msg == WM_MBUTTONDOWN;
+            // TODO: input processing
+        } break;
+    }
+
+    return DefWindowProcA(hwnd, msg, w_param, l_param);
+}
+
+#endif  // RCPLATFORM WINDOWS
