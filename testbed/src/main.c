@@ -1,24 +1,19 @@
 #include <core/logger.h>
 #include <core/asserts.h>
 
-// TODO: Test
-#include <platform/platform.h>
+#include <core/application.h>
 
-int main(void) {
-    RCFATAL("A test message: %f", 3.14f);
-    RCERROR("A test message: %f", 3.14f);
-    RCWARN("A test message: %f", 3.14f);
-    RCINFO("A test message: %f", 3.14f);
-    RCDEBUG("A test message: %f", 3.14f);
-    RCTRACE("A test message: %f", 3.14f);
+int main(void)
+{
+    application_config config;
+    config.name = "Testbed";
+    config.start_pos_x = 100;
+    config.start_pos_y = 100;
+    config.start_width = 1280;
+    config.start_height = 720;
 
-    platform_state state;
-    if (platform_startup(&state, "RCGE Testbed", 100, 100, 1280, 720)) {
-        while (TRUE) {
-            platform_pump_messages(&state);
-        }
-    }
+    application_create(&config);
+    application_run();
 
-    platform_shutdown(&state);
     return 0;
 }

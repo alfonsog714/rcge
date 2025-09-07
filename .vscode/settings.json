@@ -2,6 +2,9 @@
     "files.associations": {
         "asserts.h": "c",
         "defines.h": "c",
-        "logger.h": "c"
-    }
+        "logger.h": "c",
+        "platform.h": "c"
+    },
+    "C_Cpp.default.compilerPath": "C:/Program Files/LLVM/bin/clang.exe",
+    "C_Cpp.errorSquiggles": "enabled"
 }

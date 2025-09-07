@@ -12,34 +12,43 @@
 #define debugBreak() __builtin_debugtrap()
 #endif
 
-RCAPI void report_assertion_failure(const char* expression, const char* message, const char* file, i32 line);
+RCAPI void report_assertion_failure(const char *expression, const char *message, const char *file, i32 line);
 
 #define RCASSERT(expr)                                               \
     {                                                                \
-        if (expr) {                                                  \
-        } else {                                                     \
+        if (expr)                                                    \
+        {                                                            \
+        }                                                            \
+        else                                                         \
+        {                                                            \
             report_assertion_failure(#expr, "", __FILE__, __LINE__); \
             debugBreak();                                            \
         }                                                            \
     }
 
-#define RCASSERT_MSG(expr, message)                                                    \
-    {                                                                                  \
-        if (expr) {                                                                    \
-        } else {                                                                       \
-            report_assertion_failure(#expr, message, __FILE__, __LINE__);              \
-            debugBreak();                                                              \
-        }                                                                              \
+#define RCASSERT_MSG(expr, message)                                       \
+    {                                                                     \
+        if (expr)                                                         \
+        {                                                                 \
+        }                                                                 \
+        else                                                              \
+        {                                                                 \
+            report_assertion_failure(#expr, message, __FILE__, __LINE__); \
+            debugBreak();                                                 \
+        }                                                                 \
     }
 
 #ifdef _DEBUG
-#define RCASSERT_DEBUG(expr)                                          \
-    {                                                                 \
-        if (expr) {                                                   \
-        } else {                                                      \
-            report_assertion_failure(#expr, "", __FILE__, __LINE__);  \
-            debugBreak();                                             \
-        }                                                             \
+#define RCASSERT_DEBUG(expr)                                         \
+    {                                                                \
+        if (expr)                                                    \
+        {                                                            \
+        }                                                            \
+        else                                                         \
+        {                                                            \
+            report_assertion_failure(#expr, "", __FILE__, __LINE__); \
+            debugBreak();                                            \
+        }                                                            \
     }
 #else
 #define RCASSERT_DEBUG(expr) // do nothing
