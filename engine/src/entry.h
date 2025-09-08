@@ -2,6 +2,7 @@
 
 #include "core/application.h"
 #include "core/logger.h"
+#include "core/rcmemory.h"
 #include "game_types.h"
 
 extern b8 create_game(game *out_game);
@@ -11,6 +12,7 @@ extern b8 create_game(game *out_game);
  */
 int main(void)
 {
+    initialize_memory();
 
     game game_inst;
     if (!create_game(&game_inst))
@@ -40,5 +42,6 @@ int main(void)
         return 2;
     }
 
+    shutdown_memory();
     return 0;
 }

@@ -2,6 +2,7 @@
 #include "game_types.h"
 #include "logger.h"
 #include "platform/platform.h"
+#include "core/rcmemory.h"
 
 typedef struct application_state
 {
@@ -66,6 +67,8 @@ b8 application_create(game *game_inst)
 
 b8 application_run()
 {
+    RCINFO(get_mem_usage_str());
+
     while (app_state.is_running)
     {
         if (!platform_pump_messages(&app_state.platform))

@@ -1,9 +1,7 @@
 #include "game.h"
 
 #include <entry.h>
-
-// TODO: Including platform is for testing for now, remove later.
-#include <platform/platform.h>
+#include <core/rcmemory.h>
 
 // Defintion of the extern declaration in entry.h.
 b8 create_game(game *out_game)
@@ -19,7 +17,7 @@ b8 create_game(game *out_game)
     out_game->on_resize = game_on_resize;
     out_game->update = game_update;
 
-    out_game->state = platform_allocate(sizeof(game_state), FALSE);
+    out_game->state = rcallocate(sizeof(game_state), MEMORY_TAG_GAME);
 
     return TRUE;
 }
