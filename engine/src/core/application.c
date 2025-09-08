@@ -1,9 +1,11 @@
 #include "application.h"
+#include "game_types.h"
 #include "logger.h"
 #include "platform/platform.h"
 
 typedef struct application_state
 {
+    game *game_inst;
     b8 is_running;
     b8 is_suspended;
     platform_state platform;
@@ -15,7 +17,7 @@ typedef struct application_state
 static b8 initialized = FALSE;
 static application_state app_state;
 
-b8 application_create(application_config *config)
+b8 application_create(game *game_inst)
 {
     if (initialized)
     {
@@ -23,8 +25,11 @@ b8 application_create(application_config *config)
         return FALSE;
     }
 
+    app_state.game_inst = game_inst;
+
     // Initialize sub-systems.
     initialize_logging();
+
     // TODO: Remove this later
     RCFATAL("A test message: %f", 3.14f);
     RCERROR("A test message: %f", 3.14f);
@@ -38,14 +43,22 @@ b8 application_create(application_config *config)
 
     if (!platform_startup(
             &app_state.platform,
-            config->name,
-            config->start_pos_x,
-            config->start_pos_y,
-            config->start_width,
-            config->start_height))
+            game_inst->app_config.name,
+            game_inst->app_config.start_pos_x,
+            game_inst->app_config.start_pos_y,
+            game_inst->app_config.start_width,
+            game_inst->app_config.start_height))
     {
         return FALSE;
     }
+
+    if (!app_state.game_inst->initialize(app_state.game_inst))
+    {
+        RCFATAL("Game failed to initialize.");
+        return FALSE;
+    }
+
+    app_state.game_inst->on_resize(app_state.game_inst, app_state.width, app_state.height);
 
     initialized = TRUE;
     return TRUE;
@@ -58,6 +71,23 @@ b8 application_run()
         if (!platform_pump_messages(&app_state.platform))
         {
             app_state.is_running = FALSE;
+        }
+
+        if (!app_state.is_suspended)
+        {
+            if (!app_state.game_inst->update(app_state.game_inst, (f32)0))
+            {
+                RCFATAL("Game update failed, shutting down.");
+                app_state.is_running = FALSE;
+                break;
+            }
+
+            if (!app_state.game_inst->render(app_state.game_inst, (f32)0))
+            {
+                RCFATAL("Game render failed, shutting down.");
+                app_state.is_running = FALSE;
+                break;
+            }
         }
     }
 
