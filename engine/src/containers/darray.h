@@ -26,7 +26,7 @@ RCAPI void _darray_field_set(void *array, u64 field, u64 value);
 
 RCAPI void *_darray_resize(void *array);
 
-RCAPI void *_darrray_push(void *array, const void *value_ptr);
+RCAPI void *_darray_push(void *array, const void *value_ptr);
 RCAPI void _darray_pop(void *array, void *dest);
 
 RCAPI void *_darray_pop_at(void *array, u64 index, void *dest);
@@ -43,10 +43,10 @@ RCAPI void *_darray_insert_at(void *array, u64 index, void *value_ptr);
 
 #define darray_destory(array) _darray_destory(array);
 
-#define darray_push(array, value)          \
-    {                                      \
-        typeof(value) temp = value;        \
-        array = _darray_push(array, &temp) \
+#define darray_push(array, value)           \
+    {                                       \
+        typeof(value) temp = value;         \
+        array = _darray_push(array, &temp); \
     }
 
 #define darray_pop(array, value_ptr) \
@@ -61,4 +61,17 @@ RCAPI void *_darray_insert_at(void *array, u64 index, void *value_ptr);
 #define darray_pop_at(array, index, value_ptr) \
     _darray_pop_at(array, index, value_ptr)
 
-// CONTINUE HERE: 008: Events @31:45
+#define darray_clear(array) \
+    _darray_field_set(array, DARRAY_LENGTH, 0)
+
+#define darray_capacity(array) \
+    _darray_field_get(array, DARRAY_CAPACITY)
+
+#define darray_length(array) \
+    _darray_field_get(array, DARRAY_LENGTH)
+
+#define darray_stride(array) \
+    _darray_field_get(array, DARRAY_STRIDE)
+
+#define darray_length_set(array, value) \
+    _darray_field_set(array, DARRAY_LENGTH, value)

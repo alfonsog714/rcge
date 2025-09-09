@@ -3,6 +3,7 @@
 #include "logger.h"
 #include "platform/platform.h"
 #include "core/rcmemory.h"
+#include "core/event.h"
 
 typedef struct application_state
 {
@@ -41,6 +42,12 @@ b8 application_create(game *game_inst)
 
     app_state.is_running = TRUE;
     app_state.is_suspended = FALSE;
+
+    if (!event_initialize())
+    {
+        RCERROR("Event system failed to initialize. Application cannot continue.");
+        return FALSE;
+    }
 
     if (!platform_startup(
             &app_state.platform,
@@ -96,6 +103,7 @@ b8 application_run()
 
     app_state.is_running = FALSE;
 
+    event_shutdown();
     platform_shutdown(&app_state.platform);
 
     return TRUE;
