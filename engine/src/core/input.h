@@ -1,0 +1,54 @@
+#pragma once
+
+#include "defines.h"
+
+typedef enum buttons
+{
+    BUTTON_LEFT,
+    BUTTON_RIGHT,
+    BUTTON_MIDDLE,
+    BUTTON_MAX_BUTTONS
+} buttons;
+
+#define DEFINE_KEY(name, code) KEY_##name = code
+
+typedef enum keys
+{
+    DEFINE_KEY(BACKSPACE, 0x08),
+    DEFINE_KEY(ENTER, 0x0D),
+    DEFINE_KEY(TAB, 0x09),
+    DEFINE_KEY(SHIFT, 0X10),
+    DEFINE_KEY(CONTROL, 0x11),
+
+    DEFINE_KEY(PAUSE, 0x13),
+    DEFINE_KEY(CAPITAL, 0x14),
+
+    DEFINE_KEY(ESCAPE, 0x1B),
+
+    DEFINE_KEY(CONVERT, 0x1C),
+    DEFINE_KEY(NONCONVERT, 0x1D),
+    DEFINE_KEY(ACCEPT, 0x1E),
+    DEFINE_KEY(MODECHANGE, 0x1F),
+
+    DEFINE_KEY(SPACE, 0x20),
+    DEFINE_KEY(PRIOR, 0x21),
+    DEFINE_KEY(NEXT, 0x22),
+    DEFINE_KEY(END, 0x23),
+    DEFINE_KEY(HOME, 0X24),
+    DEFINE_KEY(LEFT, 0x25),
+    DEFINE_KEY(UP, 0x26),
+    DEFINE_KEY(RIGHT, 0x27),
+    DEFINE_KEY(DOWN, 0x28),
+    DEFINE_KEY(SELECT, 0x29),
+    DEFINE_KEY(PRINT, 0x2A),
+    DEFINE_KEY(EXECUTE, 0x2B),
+    DEFINE_KEY(SNAPSHOT, 0x2C),
+    DEFINE_KEY(INSERT, 0x2D),
+    DEFINE_KEY(DELETE, 0x2E),
+    DEFINE_KEY(HELP, 0x2F),
+
+    DEFINE_KEY(A, 0x41),
+    DEFINE_KEY(B, 0x42),
+    DEFINE_KEY(C, 0x43)
+    // CONTINUE: keep going with the key enumerations here #009 @5:31
+} keys;
