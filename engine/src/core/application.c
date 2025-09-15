@@ -4,6 +4,7 @@
 #include "platform/platform.h"
 #include "core/rcmemory.h"
 #include "core/event.h"
+#include "core/input.h"
 
 typedef struct application_state
 {
@@ -31,6 +32,7 @@ b8 application_create(game *game_inst)
 
     // Initialize sub-systems.
     initialize_logging();
+    input_initialize();
 
     // TODO: Remove this later
     RCFATAL("A test message: %f", 3.14f);
@@ -98,12 +100,16 @@ b8 application_run()
                 app_state.is_running = FALSE;
                 break;
             }
+
+            // input is processed at the end of the frame so that its output can be utilized next frame
+            input_update(0);
         }
     }
 
     app_state.is_running = FALSE;
 
     event_shutdown();
+    input_shutdown();
     platform_shutdown(&app_state.platform);
 
     return TRUE;
