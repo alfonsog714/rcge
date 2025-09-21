@@ -4,8 +4,6 @@
 #include "platform/platform.h"
 #include "core/rcstring.h"
 
-// TODO: custom string lib
-#include <string.h>
 #include <stdio.h>
 
 struct memory_stats
@@ -95,7 +93,7 @@ char *get_mem_usage_str()
     const u64 kib = 1024;
 
     char buffer[8000] = "System memory use (tagged):\n";
-    u64 offset = strlen(buffer);
+    u64 offset = string_length(buffer);
 
     for (u32 i = 0; i < MEMORY_TAG_MAX_TAGS; ++i)
     {
