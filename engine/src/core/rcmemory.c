@@ -2,7 +2,9 @@
 
 #include "core/logger.h"
 #include "platform/platform.h"
+#include "core/rcstring.h"
 
+// TODO: custom string lib
 #include <string.h>
 #include <stdio.h>
 
@@ -126,6 +128,6 @@ char *get_mem_usage_str()
         offset += length;
     }
 
-    char *out_string = _strdup(buffer);
+    char *out_string = string_duplicate(buffer);
     return out_string;
 }
