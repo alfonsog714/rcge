@@ -1,8 +1,14 @@
 #pragma once
 
 #include "defines.h"
+#include "core/asserts.h"
 
 #include <vulkan/vulkan.h>
+
+#define VK_CHECK(expr)                \
+    {                                 \
+        RCASSERT(expr == VK_SUCCESS); \
+    }
 
 typedef struct vulkan_context
 {
