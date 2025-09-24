@@ -95,14 +95,8 @@ b8 vulkan_renderer_backend_initialize(renderer_backend *backend, const char *app
     create_info.enabledLayerCount = required_validation_layer_count;
     create_info.ppEnabledLayerNames = required_validation_layer_names;
 
-    VkResult result = vkCreateInstance(&create_info, context.allocator, &context.instance);
-    if (result != VK_SUCCESS)
-    {
-        RCERROR("vkCreateInstance failed with result: %u", result);
-        return FALSE;
-    }
-
-    RCINFO("Vulkan instance initialized successfully.");
+    VK_CHECK(vkCreateInstance(&create_info, context.allocator, &context.instance));
+    RCINFO("Vulkan renderer initialized successfully.");
     return TRUE;
 }
 
