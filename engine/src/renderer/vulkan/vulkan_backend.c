@@ -1,6 +1,7 @@
 #include "vulkan_backend.h"
 #include "vulkan_types.inl"
 #include "vulkan_platform.h"
+#include "vulkan_device.h"
 #include "core/logger.h"
 #include "core/rcstring.h"
 #include "containers/darray.h"
@@ -127,6 +128,22 @@ b8 vulkan_renderer_backend_initialize(renderer_backend *backend, const char *app
     VK_CHECK(func(context.instance, &debug_create_info, context.allocator, &context.debug_messenger));
     RCDEBUG("Vulkan debugger created.");
 #endif
+
+    /* Vulkan surface init */
+    RCDEBUG("Creating Vulkan surface...");
+    if (!platform_create_vulkan_surface(plat_state, &context))
+    {
+        RCERROR("Failed to create platform surface!");
+        return FALSE;
+    }
+    RCDEBUG("Vulkan surface created successfully.");
+
+    /* Vulkan device init */
+    if (!vulkan_device_create(&context))
+    {
+        RCERROR("Failed to create device!");
+        return FALSE;
+    }
 
     RCINFO("Vulkan renderer initialized successfully.");
     return TRUE;
