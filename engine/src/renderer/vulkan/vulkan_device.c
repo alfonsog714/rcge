@@ -47,6 +47,38 @@ b8 vulkan_device_create(vulkan_context *context)
 
 void vulkan_device_destroy(vulkan_context *context)
 {
+    RCINFO("Releasing physical device resources...");
+    context->device.physical_device = 0;
+
+    if (context->device.swapchain_support.formats)
+    {
+        rcfree(
+            context->device.swapchain_support.formats,
+            sizeof(VkSurfaceFormatKHR) * context->device.swapchain_support.format_count,
+            MEMORY_TAG_RENDERER);
+
+        context->device.swapchain_support.formats = 0;
+        context->device.swapchain_support.format_count = 0;
+    }
+
+    if (context->device.swapchain_support.present_modes)
+    {
+        rcfree(
+            context->device.swapchain_support.present_modes,
+            sizeof(VkPresentModeKHR) * context->device.swapchain_support.present_mode_count,
+            MEMORY_TAG_RENDERER);
+
+        context->device.swapchain_support.present_modes = 0;
+        context->device.swapchain_support.present_mode_count = 0;
+    }
+
+    rczero_memory(
+        &context->device.swapchain_support.capabilities,
+        sizeof(context->device.swapchain_support.capabilities));
+
+    context->device.graphics_queue_index = -1;
+    context->device.present_queue_index = -1;
+    context->device.transfer_queue_index = -1;
 }
 
 void vulkan_device_query_swapchain_support(
