@@ -151,6 +151,17 @@ b8 vulkan_renderer_backend_initialize(renderer_backend *backend, const char *app
 
 void vulkan_renderer_backend_shutdown(renderer_backend *backend)
 {
+    RCDEBUG("Destroying Vulkan device...");
+    vulkan_device_destroy(&context);
+
+    RCDEBUG("Destorying Vulkan surface...");
+    if (context.surface)
+    {
+        vkDestroySurfaceKHR(context.instance,
+                            context.surface, context.allocator);
+        context.surface = 0;
+    }
+
     RCDEBUG("Destroying Vulkan debugger...");
     if (context.debug_messenger)
     {

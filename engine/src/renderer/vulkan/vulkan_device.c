@@ -79,10 +79,12 @@ b8 vulkan_device_create(vulkan_context *context)
         queue_create_infos[i].queueFamilyIndex = indices[i];
         queue_create_infos[i].queueCount = 1;
 
-        if (indices[i] == context->device.graphics_queue_index)
-        {
-            queue_create_infos[i].queueCount = 2;
-        }
+        // TODO: Some GPUs do not have the ability to have more than 1 queue for graphics and present.
+        // Enable this later.
+        // if (indices[i] == context->device.graphics_queue_index)
+        // {
+        //     queue_create_infos[i].queueCount = 2;
+        // }
 
         queue_create_infos[i].flags = 0;
         queue_create_infos[i].pNext = 0;
