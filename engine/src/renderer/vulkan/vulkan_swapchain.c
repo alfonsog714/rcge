@@ -131,7 +131,7 @@ void create(vulkan_context *context, u32 width, u32 height, vulkan_swapchain *sw
         context->surface,
         &context->device.swapchain_support);
 
-    if (context->device.swapchain_support.capabilities.currentExtent.width != UINT32_MAX)
+    if (context->device.swapchain_support.capabilities.currentExtent.width != 0xffffffffu /*UINT32_MAX */) // just getting rid of annoying linter error
     {
         swapchain_extent = context->device.swapchain_support.capabilities.currentExtent;
     }

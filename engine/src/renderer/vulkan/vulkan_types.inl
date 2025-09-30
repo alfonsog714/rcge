@@ -39,6 +39,26 @@ typedef struct vulkan_device
     VkFormat depth_format;
 } vulkan_device;
 
+typedef enum vulkan_render_pass_state
+{
+    READY,
+    RECORDING,
+    IN_RENDER_PASS,
+    RECORDING_ENDED,
+    SUBMITTED,
+    NOT_ALLOCATED
+} vulkan_render_pass_state;
+
+typedef struct vulkan_renderpass
+{
+    VkRenderPass handle;
+    f32 x, y, w, h;
+    f32 depth;
+    u32 stencil;
+
+    vulkan_render_pass_state state;
+} vulkan_renderpass;
+
 typedef struct vulkan_image
 {
     VkImage handle;
