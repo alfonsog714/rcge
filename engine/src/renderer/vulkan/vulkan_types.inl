@@ -32,6 +32,8 @@ typedef struct vulkan_device
     VkQueue present_queue;
     VkQueue transfer_queue;
 
+    VkCommandPool graphics_command_pool;
+
     VkPhysicalDeviceProperties properties;
     VkPhysicalDeviceFeatures features;
     VkPhysicalDeviceMemoryProperties memory;
@@ -113,6 +115,9 @@ typedef struct vulkan_context
     b8 recreating_swapchain;
 
     vulkan_renderpass main_renderpass;
+
+    /* DArray */
+    vulkan_command_buffer *graphics_command_buffers;
 #if defined(_DEBUG)
     VkDebugUtilsMessengerEXT debug_messenger;
 #endif
