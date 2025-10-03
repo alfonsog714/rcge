@@ -62,6 +62,14 @@ typedef struct vulkan_renderpass
     vulkan_render_pass_state state;
 } vulkan_renderpass;
 
+typedef struct vulkan_framebuffer
+{
+    VkFramebuffer handle;
+    u32 attachment_count;
+    VkImageView *attachments;
+    vulkan_renderpass *renderpass;
+} vulkan_framebuffer;
+
 typedef struct vulkan_image
 {
     VkImage handle;
@@ -80,6 +88,9 @@ typedef struct vulkan_swapchain
     VkImage *images;
     VkImageView *views;
     vulkan_image depth_attachment;
+
+    /* DArray */
+    vulkan_framebuffer *framebuffers;
 } vulkan_swapchain;
 
 typedef enum vulkan_command_buffer_state
