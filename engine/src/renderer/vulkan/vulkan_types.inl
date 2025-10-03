@@ -110,6 +110,12 @@ typedef struct vulkan_command_buffer
     vulkan_command_buffer_state state;
 } vulkan_command_buffer;
 
+typedef struct vulkan_fence
+{
+    VkFence handle;
+    b8 is_signaled;
+} vulkan_fence;
+
 typedef struct vulkan_context
 {
     i32 (*find_memory_index)(u32 type_filter, u32 property_flags);
@@ -127,8 +133,17 @@ typedef struct vulkan_context
 
     vulkan_renderpass main_renderpass;
 
-    /* DArray */
+    /* DArrays */
     vulkan_command_buffer *graphics_command_buffers;
+    VkSemaphore *image_available_semaphores;
+    VkSemaphore *queue_complete_semaphores;
+
+    u32 in_flight_fence_count;
+    vulkan_fence *in_flight_fences;
+
+    /* Holds pointers to fences that exist and are owned elsewhere. */
+    vulkan_fence **images_in_flight;
+
 #if defined(_DEBUG)
     VkDebugUtilsMessengerEXT debug_messenger;
 #endif

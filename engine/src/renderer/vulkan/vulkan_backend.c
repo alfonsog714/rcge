@@ -5,6 +5,7 @@
 #include "vulkan_renderpass.h"
 #include "vulkan_command_buffer.h"
 #include "vulkan_framebuffer.h"
+#include "vulkan_fence.h"
 #include "vulkan_device.h"
 #include "core/logger.h"
 #include "core/rcstring.h"
@@ -183,10 +184,32 @@ b8 vulkan_renderer_backend_initialize(renderer_backend *backend, const char *app
         1.0f,
         0);
 
+    /* Create swapchain framebuffers. */
     context.swapchain.framebuffers = darray_reserve(vulkan_framebuffer, context.swapchain.image_count);
     regenerate_framebuffers(backend, &context.swapchain, &context.main_renderpass);
 
+    /* Create command buffers. */
     create_command_buffers(backend);
+
+    /* Create sync objects. */
+    context.image_available_semaphores = darray_reserve(VkSemaphore, context.swapchain.max_frames_in_flight);
+    context.queue_complete_semaphores = darray_reserve(VkSemaphore, context.swapchain.max_frames_in_flight);
+    context.in_flight_fences = darray_reserve(vulkan_fence, context.swapchain.max_frames_in_flight);
+
+    for (u8 i = 0; i < context.swapchain.max_frames_in_flight; ++i)
+    {
+        VkSemaphoreCreateInfo semaphore_create_info = {VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO};
+        vkCreateSemaphore(context.device.logical_device, &semaphore_create_info, context.allocator, &context.image_available_semaphores[i]);
+        vkCreateSemaphore(context.device.logical_device, &semaphore_create_info, context.allocator, &context.queue_complete_semaphores[i]);
+
+        vulkan_fence_create(&context, TRUE, &context.in_flight_fences[i]);
+    }
+
+    context.images_in_flight = darray_reserve(vulkan_fence, context.swapchain.image_count);
+    for (u32 i = 0; i < context.swapchain.image_count; ++i)
+    {
+        context.images_in_flight[i] = 0;
+    }
 
     RCINFO("Vulkan renderer initialized successfully.");
     return TRUE;
@@ -194,6 +217,40 @@ b8 vulkan_renderer_backend_initialize(renderer_backend *backend, const char *app
 
 void vulkan_renderer_backend_shutdown(renderer_backend *backend)
 {
+    vkDeviceWaitIdle(context.device.logical_device);
+
+    /* Destroy sync objects (VkFences && VkSemaphores)*/
+    for (u8 i = 0; i < context.swapchain.max_frames_in_flight; ++i)
+    {
+        if (context.image_available_semaphores[i])
+        {
+            vkDestroySemaphore(
+                context.device.logical_device,
+                context.image_available_semaphores[i],
+                context.allocator);
+            context.image_available_semaphores[i] = 0;
+        }
+
+        if (context.queue_complete_semaphores[i])
+        {
+            vkDestroySemaphore(
+                context.device.logical_device,
+                context.queue_complete_semaphores[i],
+                context.allocator);
+            context.queue_complete_semaphores[i] = 0;
+        }
+
+        vulkan_fence_destroy(&context, &context.in_flight_fences[i]);
+    }
+    darray_destroy(context.image_available_semaphores);
+    context.image_available_semaphores = 0;
+    darray_destroy(context.queue_complete_semaphores);
+    context.queue_complete_semaphores = 0;
+    darray_destroy(context.in_flight_fences);
+    context.in_flight_fences = 0;
+    darray_destroy(context.images_in_flight);
+    context.images_in_flight = 0;
+
     /* Destroy command buffers */
     for (u32 i = 0; i < context.swapchain.image_count; ++i)
     {
@@ -206,7 +263,7 @@ void vulkan_renderer_backend_shutdown(renderer_backend *backend)
             context.graphics_command_buffers[i].handle = 0;
         }
     }
-    darray_destory(context.graphics_command_buffers);
+    darray_destroy(context.graphics_command_buffers);
     context.graphics_command_buffers = 0;
 
     for (u32 i = 0; i < context.swapchain.image_count; ++i)
@@ -223,7 +280,7 @@ void vulkan_renderer_backend_shutdown(renderer_backend *backend)
     RCDEBUG("Destroying Vulkan device...");
     vulkan_device_destroy(&context);
 
-    RCDEBUG("Destorying Vulkan surface...");
+    RCDEBUG("Destroying Vulkan surface...");
     if (context.surface)
     {
         vkDestroySurfaceKHR(context.instance,

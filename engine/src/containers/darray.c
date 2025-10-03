@@ -14,7 +14,7 @@ void *_darray_create(u64 length, u64 stride)
     return (void *)(new_array + DARRAY_FIELD_LENGTH);
 }
 
-void _darray_destory(void *array)
+void _darray_destroy(void *array)
 {
     u64 *header = (u64 *)array - DARRAY_FIELD_LENGTH;
     u64 header_size = DARRAY_FIELD_LENGTH * sizeof(u64);
@@ -45,7 +45,7 @@ void *_darray_resize(void *array)
     rccopy_memory(temp, array, length * stride);
 
     _darray_field_set(temp, DARRAY_LENGTH, length);
-    _darray_destory(array);
+    _darray_destroy(array);
     return temp;
 }
 

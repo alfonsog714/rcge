@@ -42,7 +42,7 @@ void event_shutdown()
     {
         if (state.registered[i].events != 0)
         {
-            darray_destory(state.registered[i].events);
+            darray_destroy(state.registered[i].events);
             state.registered[i].events = 0;
         }
     }

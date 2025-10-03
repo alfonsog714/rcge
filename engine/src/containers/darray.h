@@ -19,7 +19,7 @@ enum
 };
 
 RCAPI void *_darray_create(u64 length, u64 stride);
-RCAPI void _darray_destory(void *array);
+RCAPI void _darray_destroy(void *array);
 
 RCAPI u64 _darray_field_get(void *array, u64 field);
 RCAPI void _darray_field_set(void *array, u64 field, u64 value);
@@ -41,7 +41,7 @@ RCAPI void *_darray_insert_at(void *array, u64 index, void *value_ptr);
 #define darray_reserve(type, capacity) \
     _darray_create(capacity, sizeof(type))
 
-#define darray_destory(array) _darray_destory(array);
+#define darray_destroy(array) _darray_destroy(array);
 
 #define darray_push(array, value)           \
     {                                       \
