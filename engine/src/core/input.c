@@ -75,7 +75,7 @@ void input_process_mouse_move(i16 x, i16 y)
 {
     if (state.mouse_current.x != x || state.mouse_current.y != y)
     {
-        RCDEBUG("Mouse pos: %i, %i", x, y);
+        // RCDEBUG("Mouse pos: %i, %i", x, y);
         state.mouse_current.x = x;
         state.mouse_current.y = y;
 

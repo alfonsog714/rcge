@@ -129,6 +129,8 @@ typedef struct vulkan_context
     vulkan_swapchain swapchain;
     u32 image_index;
     u32 current_frame;
+    u64 framebuffer_size_generation;
+    u64 framebuffer_size_last_generation;
     b8 recreating_swapchain;
 
     vulkan_renderpass main_renderpass;
