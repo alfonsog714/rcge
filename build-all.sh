@@ -1,4 +1,5 @@
 #!/bin/bash
+#TODO: Fix this one you've made the linux makefiles.
 set echo on
 
 pushd engine
