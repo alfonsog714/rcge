@@ -89,3 +89,12 @@ STATIC_ASSERT(sizeof(b8) == 1, "Expected b8 to be 1 byte");
 
 #define RCCLAMP(value, min, max) (value <= min) ? min : (value >= max) ? max \
                                                                        : value;
+
+/* Function inlining */
+#ifdef _MSC_VER
+#define RCINLINE __forceinline
+#define RCNOINLINE __declspec(noinline)
+#else
+#define RCINLINE static inline
+#define RCNOINLINE
+#endif

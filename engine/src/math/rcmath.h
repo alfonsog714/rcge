@@ -21,3 +21,16 @@
 
 #define RC_INFINITY 1e30f
 #define RC_FLOAT_EPSILON 1.192092896e-07f
+
+/* General math functions */
+RCAPI f32 rcsin(f32 x);
+RCAPI f32 rccos(f32 x);
+RCAPI f32 rctan(f32 x);
+RCAPI f32 rcacos(f32 x);
+RCAPI f32 rcsqrt(f32 x);
+RCAPI f32 rcabs(f32 x);
+
+RCINLINE b8 is_power_of_2(u64 value)
+{
+    return (value != 0) && ((value & (value - 1)) == 0);
+}
