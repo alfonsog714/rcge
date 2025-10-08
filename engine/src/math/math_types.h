@@ -20,7 +20,7 @@ typedef union vec2_u
     };
 } vec2;
 
-typedef struct vec3_u
+typedef union vec3_u
 {
     f32 elements[3];
 
@@ -76,3 +76,5 @@ typedef union vec4_u
         };
     };
 } vec4;
+
+typedef vec4 quat;
