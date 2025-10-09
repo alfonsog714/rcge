@@ -2,6 +2,7 @@
 
 #include "defines.h"
 #include "math_types.h"
+#include "core/rcmemory.h"
 
 #define RC_PI 3.14159265358979323846f
 #define RC_PI_2 (2 * RC_PI)
@@ -706,4 +707,158 @@ RCINLINE f32 vec4_dot_f32(
         a3 * b3;
 
     return dot;
+}
+
+/**
+ * ****************
+ * Matrix functions
+ * ****************
+ */
+
+/**
+ * @brief Creates and returns an identity matrix. (1s in diagonal)
+ *
+ * @return A new identity matrix.
+ */
+RCINLINE mat4 mat4_identity()
+{
+    mat4 out_matrix;
+    rczero_memory(&out_matrix, sizeof(f32) * 16);
+
+    out_matrix.data[0] = 1.0f;
+    out_matrix.data[5] = 1.0f;
+    out_matrix.data[10] = 1.0f;
+    out_matrix.data[15] = 1.0f;
+    return out_matrix;
+}
+
+/**
+ * @brief Returns the resulting matrix from multiplying mat_0 and mat_1.
+ *
+ * @param mat_0 The first matrix.
+ * @param mat_1 The second matrix.
+ * @return The result of the matrix multiplication.
+ */
+RCINLINE mat4 mat4_mul(mat4 mat_0, mat4 mat_1)
+{
+    mat4 out_matrix = mat4_identity();
+
+    const f32 *m0_ptr = mat_0.data;
+    const f32 *m1_ptr = mat_1.data;
+    f32 *dst_ptr = out_matrix.data;
+
+    for (i32 i = 0; i < 4; ++i)
+    {
+        for (i32 j = 0; j < 4; ++j)
+        {
+            *dst_ptr =
+                m0_ptr[0] * m1_ptr[0 + j] +
+                m0_ptr[1] * m1_ptr[4 + j] +
+                m0_ptr[2] * m1_ptr[8 + j] +
+                m0_ptr[3] * m1_ptr[12 + j];
+
+            dst_ptr++;
+        }
+        m0_ptr += 4;
+    }
+
+    return out_matrix;
+}
+
+/**
+ * @brief Creates the orthographic projection matrix.
+ *
+ * @param left The left side of the view frusum.
+ * @param right The right side of the view frusum.
+ * @param bottom The bottom side of the view frusum.
+ * @param top The top side of the view frusum.
+ * @param near_clip The near clipping plane distance.
+ * @param far_clip The far clippping plane distance.
+ * @return A new orthographic matrix.
+ */
+RCINLINE mat4 mat4_orthographic(f32 left, f32 right, f32 bottom, f32 top, f32 near_clip, f32 far_clip)
+{
+    mat4 out_matrix = mat4_identity();
+
+    f32 lr = 1.0f / (left - right);
+    f32 bt = 1.0f / (bottom - top);
+    f32 nf = 1.0f / (near_clip - far_clip);
+
+    out_matrix.data[0] = -2.0f * lr;
+    out_matrix.data[5] = -2.0f * bt;
+    out_matrix.data[10] = -2.0f * nf;
+
+    out_matrix.data[12] = (left + right) * lr;
+    out_matrix.data[13] = (top + bottom) * bt;
+    out_matrix.data[14] = (near_clip + far_clip) * nf;
+    return out_matrix;
+}
+
+/**
+ * @brief Creates the perspective matrix.
+ *
+ * @param fovr The field of view in radians.
+ * @param aspect_ratio The aspect ratio.
+ * @param near_clip The near clipping plane distance.
+ * @param far_clip The far clipping plane distance.
+ * @return A new perspective matrix.
+ */
+RCINLINE mat4 mat4_perspective(f32 fovr, f32 aspect_ratio, f32 near_clip, f32 far_clip)
+{
+    f32 half_tan_fov = rctan(fovr * 0.5f);
+    mat4 out_matrix;
+    rczero_memory(&out_matrix, sizeof(f32) * 16);
+
+    out_matrix.data[0] = 1.0f / (aspect_ratio * half_tan_fov);
+    out_matrix.data[5] = 1.0f / half_tan_fov;
+    out_matrix.data[10] = -((far_clip + near_clip) / (far_clip - near_clip));
+    out_matrix.data[11] = -1.0f;
+    out_matrix.data[14] = -((2.0f * far_clip * near_clip) / (far_clip - near_clip));
+
+    return out_matrix;
+}
+
+/**
+ * @brief Creates a matrix looking at the target from the perspective of position,
+ * otherwise known as a look-at matrix.
+ *
+ * @param position The position of the matrix.
+ * @param target The position to look at.
+ * @param up The up vector.
+ * @return A matrix looking at the target from the perspective of position.
+ */
+RCINLINE mat4 mat4_look_at(vec3 position, vec3 target, vec3 up)
+{
+    mat4 out_matrix;
+    vec3 z_axis;
+
+    z_axis.x = target.x - position.x;
+    z_axis.y = target.y - position.y;
+    z_axis.z = target.z - position.z;
+
+    z_axis = vec3_normalized(z_axis);
+    vec3 x_axis = vec3_normalized(vec3_cross(z_axis, up));
+    vec3 y_axis = vec3_cross(x_axis, z_axis);
+
+    out_matrix.data[0] = x_axis.x;
+    out_matrix.data[1] = y_axis.x;
+    out_matrix.data[2] = -z_axis.x;
+    out_matrix.data[3] = 0;
+
+    out_matrix.data[4] = x_axis.y;
+    out_matrix.data[5] = y_axis.y;
+    out_matrix.data[6] = -z_axis.y;
+    out_matrix.data[7] = 0;
+
+    out_matrix.data[8] = x_axis.z;
+    out_matrix.data[9] = y_axis.z;
+    out_matrix.data[10] = -z_axis.z;
+    out_matrix.data[11] = 0;
+
+    out_matrix.data[12] = -vec3_dot(x_axis, position);
+    out_matrix.data[13] = -vec3_dot(y_axis, position);
+    out_matrix.data[14] = vec3_dot(z_axis, position);
+    out_matrix.data[15] = 1.0f;
+
+    return out_matrix;
 }
