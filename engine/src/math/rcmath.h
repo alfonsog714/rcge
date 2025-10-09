@@ -225,3 +225,301 @@ RCINLINE f32 vec2_distance(vec2 vec_0, vec2 vec_1)
     };
     return vec2_length(distance);
 }
+
+/**
+ * ****************************
+ * Vec3 math functions
+ * ****************************
+ */
+
+/**
+ * @brief Creates and returns a 3-element vector.
+ *
+ * @param x The first element.
+ * @param y The second element.
+ * @param z The third element.
+ * @return A new 3-element vector.
+ */
+RCINLINE vec3 vec3_create(f32 x, f32 y, f32 z)
+{
+    return (vec3){x, y, z};
+}
+
+RCINLINE vec3 vec3_zero()
+{
+    return (vec3){0.0f, 0.0f, 0.0f};
+}
+
+RCINLINE vec3 vec3_one()
+{
+    return (vec3){1.0f, 1.0f, 1.0f};
+}
+
+RCINLINE vec3 vec3_left()
+{
+    return (vec3){-1.0f, 0.0f, 0.0f};
+}
+
+RCINLINE vec3 vec3_right()
+{
+    return (vec3){1.0f, 0.0f, 0.0f};
+}
+
+RCINLINE vec3 vec3_up()
+{
+    return (vec3){0.0f, 1.0f, 0.0f};
+}
+
+RCINLINE vec3 vec3_down()
+{
+    return (vec3){0.0f, -1.0f, 0.0f};
+}
+
+RCINLINE vec3 vec3_forward()
+{
+    return (vec3){0.0f, 0.0f, -1.0f};
+}
+
+RCINLINE vec3 vec3_backward()
+{
+    return (vec3){0.0f, 0.0f, 1.0f};
+}
+
+/**
+ * @brief Adds vec_1 to vec_0 and returns a copy of the result.
+ *
+ * @param vec_0 The first vector.
+ * @param vec_1 The second vector.
+ * @returns A copy of the result vector.
+ */
+RCINLINE vec3 vec3_add(vec3 vec_0, vec3 vec_1)
+{
+    return (vec3){
+        vec_0.x + vec_1.x,
+        vec_0.y + vec_1.y,
+        vec_0.z + vec_1.z};
+}
+
+/**
+ * @brief Subtracts vec_1 from vec_0 and returns a copy of the result.
+ *
+ * @param vec_0 The first vector.
+ * @param vec_1 The second vector.
+ * @returns A copy of the result vector.
+ */
+RCINLINE vec3 vec3_sub(vec3 vec_0, vec3 vec_1)
+{
+    return (vec3){
+        vec_0.x - vec_1.x,
+        vec_0.y - vec_1.y,
+        vec_0.z - vec_1.z};
+}
+
+/**
+ * @brief Multiplies vec_1 by vec_0 and returns a copy of the result.
+ *
+ * @param vec_0 The first vector.
+ * @param vec_1 The second vector.
+ * @returns A copy of the result vector.
+ */
+RCINLINE vec3 vec3_mul(vec3 vec_0, vec3 vec_1)
+{
+    return (vec3){
+        vec_0.x * vec_1.x,
+        vec_0.y * vec_1.y,
+        vec_0.z * vec_1.z};
+}
+
+/**
+ * @brief Divides vec_0 by vec_1 and returns a copy of the result.
+ *
+ * @param vec_0 The first vector.
+ * @param vec_1 The second vector.
+ * @returns A copy of the result vector.
+ */
+RCINLINE vec3 vec3_div(vec3 vec_0, vec3 vec_1)
+{
+    return (vec3){
+        vec_0.x / vec_1.x,
+        vec_0.y / vec_1.y,
+        vec_0.z / vec_1.z};
+}
+
+/**
+ * @brief Multiplies all elements by a scalar and returns a copy of the result.
+ *
+ * @param vec The vector to be multiplied.
+ * @param scalar The scalar value to multiply by.
+ * @returns A copy of the result vector.
+ */
+RCINLINE vec3 vec3_mul_scalar(vec3 vec, f32 scalar)
+{
+    return (vec3){
+        vec.x * scalar,
+        vec.y * scalar,
+        vec.z * scalar};
+}
+
+/**
+ * @brief Returns the squared length of the vector.
+ *
+ * @param vec The vector to retrieve the squared length of.
+ * @returns The squared length.
+ */
+RCINLINE f32 vec3_length_squared(vec3 vec)
+{
+    return vec.x * vec.x + vec.y + vec.y + vec.z + vec.z;
+}
+
+/**
+ * @brief Returns the length of the vector.
+ *
+ * @param vec The vector to retrieve the length of.
+ * @returns The length.
+ */
+RCINLINE f32 vec3_length(vec3 vec)
+{
+    return rcsqrt(vec3_length_squared(vec));
+}
+
+/**
+ * @brief Normalizes the provided vector in-place.
+ *
+ * @param vec A pointer to the vector to be normalized.
+ */
+RCINLINE void vec3_normalize(vec3 *vec)
+{
+    const f32 length = vec3_length(*vec);
+    vec->x /= length;
+    vec->y /= length;
+    vec->z /= length;
+}
+
+/**
+ * @brief Normalizes the provided vector and returns a copy of the result..
+ *
+ * @param vec A pointer to the vector to be normalized.
+ * @return The normalized version of the provided vector.
+ */
+RCINLINE vec3 vec3_normalized(vec3 vec)
+{
+    vec3_normalize(&vec);
+    return vec;
+}
+
+/**
+ * @brief Returns the dot product between the two provided vectors.
+ *
+ * @param vec_0 The first vector.
+ * @param vec_1 The second vector.
+ * @returns The dot product.
+ */
+RCINLINE f32 vec3_dot(vec3 vec_0, vec3 vec_1)
+{
+    f32 dot_product = 0;
+    dot_product += vec_0.x * vec_1.x;
+    dot_product += vec_0.y * vec_1.y;
+    dot_product += vec_0.z * vec_1.z;
+    return dot_product;
+}
+
+/**
+ * @brief Calculates the cross product of the supplied vectors.
+ *
+ * @param vec_0 The first vector.
+ * @param vec_1 The second vector.
+ * @return The resulting vector from the cross product of the two provided vectors.
+ */
+RCINLINE vec3 vec3_cross(vec3 vec_0, vec3 vec_1)
+{
+    return (vec3){
+        vec_0.y * vec_1.z - vec_0.z * vec_1.y,
+        vec_0.z * vec_1.x - vec_0.x * vec_1.z,
+        vec_0.x * vec_1.y - vec_0.y * vec_1.x};
+}
+
+/**
+ * @brief Compares all elements of vec_0 and vec_1 and ensures the difference is less than the tolerance.
+ *
+ * @param vec_0 The first vector.
+ * @param vec_1 The second vector.
+ * @param tolerance The difference tolerance.
+ * @return True if within tolerance; false otherwise.
+ */
+RCINLINE b8 vec3_compare(vec3 vec_0, vec3 vec_1, f32 tolerance)
+{
+    if (rcabs(vec_0.x - vec_1.x) > tolerance)
+    {
+        return FALSE;
+    }
+
+    if (rcabs(vec_0.y - vec_1.y) > tolerance)
+    {
+        return FALSE;
+    }
+
+    if (rcabs(vec_0.z - vec_1.z) > tolerance)
+    {
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+/**
+ * @brief Returns the distance between the two provided vectors.
+ *
+ * @param vec_0 The first vector.
+ * @param vec_1 The second vector.
+ * @return The distance between vec_0 and vec_1.
+ */
+RCINLINE f32 vec3_distance(vec3 vec_0, vec3 vec_1)
+{
+    vec3 d = (vec3){
+        vec_0.x - vec_1.x,
+        vec_0.y - vec_1.y,
+        vec_0.z - vec_1.z};
+
+    return vec3_length(d);
+}
+
+/**
+ * ****************************
+ * Vec4 math functions
+ * ****************************
+ */
+
+/**
+ * @brief Creates and returns a new 4-element vector.
+ *
+ * @param x The first value.
+ * @param y The second value.
+ * @param z The third value.
+ * @param w The fourth value.
+ * @return A new 4-element vector.
+ */
+RCINLINE vec4 vec4_create(f32 x, f32 y, f32 z, f32 w)
+{
+    vec4 out_vector;
+#if defined(RCUSE_SIMD)
+    out_vector.data = _mm_setr_ps(x, y, z, w);
+#else
+    out_vector.x = x;
+    out_vector.y = y;
+    out_vector.z = z;
+    out_vector.w = w;
+#endif
+    return out_vector;
+}
+
+/**
+ * @brief Returns a new vec3 containing the x, y, z components of
+ * the provided vec4.
+ *
+ * @param vec The 4-component vector to extract from.
+ * @return A new vec3.
+ */
+RCINLINE vec3 vec4_to_vec3(vec4 vec)
+{
+    return (vec3){vec.x, vec.y, vec.z};
+}
