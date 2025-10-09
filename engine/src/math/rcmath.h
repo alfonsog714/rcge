@@ -245,6 +245,31 @@ RCINLINE vec3 vec3_create(f32 x, f32 y, f32 z)
     return (vec3){x, y, z};
 }
 
+/**
+ * @brief Returns a new vec3 containing the x, y, z components of
+ * the provided vec4.
+ *
+ * @param vec The 4-component vector to extract from.
+ * @return A new vec3.
+ */
+RCINLINE vec3 vec3_from_vec4(vec4 vec)
+{
+    return (vec3){vec.x, vec.y, vec.z};
+}
+
+/**
+ * @brief Returns a new vec4 containing the provided vector's x, y
+ * and z components and uses the provided w for the w component.
+ *
+ * @param vec The 3-component vector.
+ * @param w The w component for the new vector.
+ * @return The new vec4.
+ */
+RCINLINE vec4 vec3_to_vec4(vec3 vec, f32 w)
+{
+    return (vec4){vec.x, vec.y, vec.z, w};
+}
+
 RCINLINE vec3 vec3_zero()
 {
     return (vec3){0.0f, 0.0f, 0.0f};
@@ -522,4 +547,163 @@ RCINLINE vec4 vec4_create(f32 x, f32 y, f32 z, f32 w)
 RCINLINE vec3 vec4_to_vec3(vec4 vec)
 {
     return (vec3){vec.x, vec.y, vec.z};
+}
+
+/**
+ * @brief Returns a new vec4 using the provided vec3's x, y and z components and
+ * the provided w for the w component.
+ *
+ * @param vec The 3-component vector.
+ * @param w The w component.
+ * @return The new vec4.
+ */
+RCINLINE vec4 vec4_from_vec3(vec3 vec, f32 w)
+{
+#if defined(RCUSE_SIMD)
+    vec4 out_vector;
+    out_vector.data = _mm_setr_ps(vec.x, vec.y, vec.z, w); // TODO: look at this again later if you're having issues with vec4 conversions.
+    return out_vector;
+#else
+    return (vec4){vec.x, vec.y, vec.z, w};
+#endif
+}
+
+RCINLINE vec4 vec4_zero()
+{
+    return (vec4){0.0f, 0.0f, 0.0f, 0.0f};
+}
+
+RCINLINE vec4 vec4_one()
+{
+    return (vec4){1.0f, 1.0f, 1.0f, 1.0f};
+}
+
+/**
+ * @brief Adds vec_0 and vec_1 and returns a copy of the result.
+ *
+ * @param vec_0 The first vector.
+ * @param vec_1 The second vector.
+ *
+ * @return The resulting vector.
+ */
+RCINLINE vec4 vec4_add(vec4 vec_0, vec4 vec_1)
+{
+    return (vec4){
+        vec_0.x + vec_1.x,
+        vec_0.y + vec_1.y,
+        vec_0.z + vec_1.z,
+        vec_0.w + vec_1.w};
+}
+
+/**
+ * @brief Subtracts vec_1 from vec_0 and returns a copy of the result.
+ *
+ * @param vec_0 The first vector.
+ * @param vec_1 The second vector.
+ *
+ * @return The resulting vector.
+ */
+RCINLINE vec4 vec4_sub(vec4 vec_0, vec4 vec_1)
+{
+    return (vec4){
+        vec_0.x - vec_1.x,
+        vec_0.y - vec_1.y,
+        vec_0.z - vec_1.z,
+        vec_0.w - vec_1.w};
+}
+
+/**
+ * @brief Multiplies vec_0 and vec_1 and returns a copy of the result.
+ *
+ * @param vec_0 The first vector.
+ * @param vec_1 The second vector.
+ *
+ * @return The resulting vector.
+ */
+RCINLINE vec4 vec4_mul(vec4 vec_0, vec4 vec_1)
+{
+    return (vec4){
+        vec_0.x * vec_1.x,
+        vec_0.y * vec_1.y,
+        vec_0.z * vec_1.z,
+        vec_0.w * vec_1.w};
+}
+
+/**
+ * @brief Divides vec_0 by vec_1 and returns a copy of the result.
+ *
+ * @param vec_0 The first vector.
+ * @param vec_1 The second vector.
+ *
+ * @return The resulting vector.
+ */
+RCINLINE vec4 vec4_div(vec4 vec_0, vec4 vec_1)
+{
+    return (vec4){
+        vec_0.x / vec_1.x,
+        vec_0.y / vec_1.y,
+        vec_0.z / vec_1.z,
+        vec_0.w / vec_1.w};
+}
+
+/**
+ * @brief Acquires the squared length of the provided vec4.
+ *
+ * @param vec vec4 to retrieve the squared length of.
+ * @return The squared length.
+ */
+RCINLINE f32 vec4_length_squared(vec4 vec)
+{
+    return vec.x * vec.x + vec.y * vec.y + vec.z * vec.z + vec.w * vec.w;
+}
+
+/**
+ * @brief Returns the length of the given vec4.
+ *
+ * @param vec vec4 to get the length of.
+ * @return The length of the provided vec4.
+ */
+RCINLINE f32 vec4_length(vec4 vec)
+{
+    return rcsqrt(vec4_length_squared(vec));
+}
+
+/**
+ * @brief Normalizes the provided vec4 in-place.
+ *
+ * @param vec A pointer to the vec4 to be normalized.
+ */
+RCINLINE void vec4_normalize(vec4 *vec)
+{
+    f32 length = vec4_length(*vec);
+    vec->x /= length;
+    vec->y /= length;
+    vec->z /= length;
+    vec->w /= length;
+}
+
+/**
+ * @brief Normalizes the provided vec4 and returns a copy of the result.
+ *
+ * @param vec The vec4 to be normalized.
+ * @return The normalized vector.
+ */
+RCINLINE vec4 vec4_normalized(vec4 vec)
+{
+    vec4_normalize(&vec);
+    return vec;
+}
+
+RCINLINE f32 vec4_dot_f32(
+    f32 a0, f32 a1, f32 a2, f32 a3,
+    f32 b0, f32 b1, f32 b2, f32 b3)
+{
+    f32 dot;
+    dot =
+        a0 * b0 +
+        a1 * b1 +
+        a2 * b2 +
+        a3 * b3;
+
+    return dot;
 }
