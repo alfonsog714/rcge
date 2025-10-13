@@ -45,10 +45,7 @@ typedef union vec3_u
 
 typedef union vec4_u
 {
-#if defined(RCUSE_SIMD)
-    alignas(16) __m128 data;
-#endif
-    alignas(16) f32 elements[4];
+    f32 elements[4];
 
     union
     {
@@ -81,10 +78,5 @@ typedef vec4 quat;
 
 typedef union mat4_u
 {
-    alignas(16) f32 data[16];
-
-#if defined(RCUSE_SIMD)
-    // used for simd stuff
-    alignas(16) vec4 rows[4];
-#endif
+    f32 data[16];
 } mat4;
