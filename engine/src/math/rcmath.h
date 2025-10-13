@@ -958,6 +958,12 @@ RCINLINE mat4 mat4_inverse(mat4 matrix)
     return out_matrix;
 }
 
+/**
+ * @brief Returns a translation matrix.
+ *
+ * @param position The position to translate.
+ * @return A translation matrix.
+ */
 RCINLINE mat4 mat4_translation(vec3 position)
 {
     mat4 out_matrix = mat4_identity();
@@ -1034,4 +1040,237 @@ RCINLINE mat4 mat4_euler_xyz(f32 x_radians, f32 y_radians, f32 z_radians)
     return out_matrix;
 }
 
-//
+/**
+ * @brief Returns a forward vector relative to the provided matrix.
+ *
+ * @param matrix The matrix to base from.
+ * @return A vec3.
+ */
+RCINLINE vec3 mat4_forward(mat4 matrix)
+{
+    vec3 forward;
+    forward.x = -matrix.data[2];
+    forward.y = -matrix.data[6];
+    forward.z = -matrix.data[10];
+    vec3_normalize(&forward);
+    return forward;
+}
+
+/**
+ * @brief Returns a backward vector relative to the provided matrix.
+ *
+ * @param matrix The matrix to base from.
+ * @return A vec3.
+ */
+RCINLINE vec3 mat4_backward(mat4 matrix)
+{
+    vec3 backward;
+    backward.x = matrix.data[2];
+    backward.y = matrix.data[6];
+    backward.z = matrix.data[10];
+    vec3_normalize(&backward);
+    return backward;
+}
+
+/**
+ * @brief Returns an upward vector relative to the provided matrix.
+ *
+ * @param matrix The matrix to base from.
+ * @return A vec3.
+ */
+RCINLINE vec3 mat4_up(mat4 matrix)
+{
+    vec3 up;
+    up.x = matrix.data[1];
+    up.y = matrix.data[5];
+    up.z = matrix.data[9];
+    vec3_normalize(&up);
+    return up;
+}
+
+/**
+ * @brief Returns a downward vector relative to the provided matrix.
+ *
+ * @param matrix The matrix to base from.
+ * @return A vec3.
+ */
+RCINLINE vec3 mat4_down(mat4 matrix)
+{
+    vec3 down;
+    down.x = -matrix.data[1];
+    down.y = -matrix.data[5];
+    down.z = -matrix.data[9];
+    vec3_normalize(&down);
+    return down;
+}
+
+/**
+ * @brief Returns a left vector relative to the provided matrix.
+ *
+ * @param matrix The matrix to base from.
+ * @return A vec3.
+ */
+RCINLINE vec3 mat4_left(mat4 matrix)
+{
+    vec3 left;
+    left.x = -matrix.data[0];
+    left.y = -matrix.data[4];
+    left.z = -matrix.data[8];
+    vec3_normalize(&left);
+    return left;
+}
+
+/**
+ * @brief Returns a right vector relative to the provided matrix.
+ *
+ * @param matrix The matrix to base from.
+ * @return A vec3.
+ */
+RCINLINE vec3 mat4_right(mat4 matrix)
+{
+    vec3 right;
+    right.x = matrix.data[0];
+    right.y = matrix.data[4];
+    right.z = matrix.data[8];
+    vec3_normalize(&right);
+    return right;
+}
+
+/**
+ * ********************
+ * Quaternion functions
+ * ********************
+ */
+
+RCINLINE quat quat_identity()
+{
+    return (quat){0, 0, 0, 1.0f};
+}
+
+RCINLINE f32 quat_normal(quat q)
+{
+    return rcsqrt(
+        q.x * q.x +
+        q.y * q.y +
+        q.z * q.z +
+        q.w * q.w);
+}
+
+RCINLINE quat quat_normalize(quat q)
+{
+    f32 normal = quat_normal(q);
+    return (quat){
+        q.x / normal,
+        q.y / normal,
+        q.z / normal,
+        q.w / normal};
+}
+
+RCINLINE quat quat_conjugate(quat q)
+{
+    return (quat){
+        -q.x,
+        -q.y,
+        -q.z,
+        q.w};
+}
+
+RCINLINE quat quat_inverse(quat q)
+{
+    return quat_normalize(quat_conjugate(q));
+}
+
+RCINLINE quat quat_mul(quat q_0, quat q_1)
+{
+    quat out_q;
+
+    out_q.x = q_0.x * q_1.w +
+              q_0.y * q_1.z -
+              q_0.z * q_1.y +
+              q_0.w * q_1.x;
+
+    out_q.y = -q_0.x * q_1.z +
+              q_0.y * q_1.w +
+              q_0.z * q_1.x +
+              q_0.w * q_1.y;
+
+    out_q.z = q_0.x * q_1.y -
+              q_0.y * q_1.x +
+              q_0.z * q_1.w +
+              q_0.w * q_1.z;
+
+    out_q.w = -q_0.x * q_1.x -
+              q_0.y * q_1.y -
+              q_0.z * q_1.x +
+              q_0.w * q_1.w;
+
+    return out_q;
+}
+
+RCINLINE f32 quat_dot(quat q_0, quat q_1)
+{
+    return q_0.x * q_1.x +
+           q_0.y * q_1.y +
+           q_0.z * q_1.z +
+           q_0.w * q_1.w;
+}
+
+RCINLINE mat4 quat_to_mat4(quat q)
+{
+    mat4 out_matrix = mat4_identity();
+
+    quat n = quat_normalize(q);
+
+    out_matrix.data[0] = 1.0f - 2.0f * n.y * n.y - 2.0f * n.z * n.z;
+    out_matrix.data[1] = 2.0f * n.x * n.y - 2.0f * n.z * n.w;
+    out_matrix.data[2] = 2.0f * n.x * n.z + 2.0f * n.y * n.w;
+
+    out_matrix.data[4] = 2.0f * n.x * n.y + 2.0f * n.z * n.w;
+    out_matrix.data[5] = 1.0f - 2.0f * n.x * n.x - 2.0f * n.z * n.z;
+    out_matrix.data[6] = 2.0f * n.y * n.z - 2.0f * n.x * n.w;
+
+    out_matrix.data[8] = 2.0f * n.x * n.z - 2.0f * n.y * n.w;
+    out_matrix.data[9] = 2.0f * n.y * n.z + 2.0f * n.x * n.w;
+    out_matrix.data[10] = 1.0f - 2.0f * n.x * n.x - 2.0f * n.y * n.y;
+
+    return out_matrix;
+}
+
+RCINLINE mat4 quat_to_rotation_matrix(quat q, vec3 center)
+{
+    mat4 out_matrix;
+
+    f32 *o = out_matrix.data;
+    o[0] = (q.x * q.x) - (q.y * q.y) - (q.z * q.z) + (q.w * q.w);
+    o[1] = 2.0f * ((q.x * q.y) + (q.z * q.w));
+    o[2] = 2.0f * ((q.x * q.z) - (q.y * q.w));
+    o[3] = center.x - center.x * o[0] - center.y * o[1] - center.z * o[2];
+
+    o[4] = 2.0f * ((q.x * q.y) - (q.z * q.w));
+    o[5] = -(q.x * q.x) + (q.y * q.y) - (q.z * q.z) + (q.w * q.w);
+    o[6] = 2.0f * ((q.y * q.z) + (q.x * q.w));
+    o[7] = center.y - center.x * o[4] - center.y * o[5] - center.z * o[6];
+
+    o[8] = 2.0f * ((q.x * q.z) + (q.y * q.w));
+    o[9] = 2.0f * ((q.y * q.z) - (q.x * q.w));
+    o[10] = -(q.x * q.x) - (q.y * q.y) + (q.z * q.z) + (q.w * q.w);
+    o[11] = center.z - center.x * o[8] - center.y * o[9] - center.z * o[10];
+
+    o[12] = 0.0f;
+    o[13] = 0.0f;
+    o[14] = 0.0f;
+    o[15] = 1.0f;
+
+    return out_matrix;
+}
+
+RCINLINE quat quat_from_axis_angle(vec3 axis, f32 angle, b8 normalize)
+{
+    const f32 half_angle = 0.5f * angle;
+    f32 s = rcsin(half_angle);
+    f32 c = rccos(half_angle);
+
+    quat q = (quat){s * axis.x, s * axis.y, s * axis.z, c};
+
+    return normalize ? quat_normalize(q) : q;
+}
