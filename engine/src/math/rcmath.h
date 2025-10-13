@@ -1274,3 +1274,75 @@ RCINLINE quat quat_from_axis_angle(vec3 axis, f32 angle, b8 normalize)
 
     return normalize ? quat_normalize(q) : q;
 }
+
+RCINLINE quat quat_slerp(quat q_0, quat q_1, f32 percentage)
+{
+    quat out_quat;
+
+    quat v0 = quat_normalize(q_0);
+    quat v1 = quat_normalize(q_1);
+    f32 dot = quat_dot(v0, v1);
+
+    if (dot < 0.0f)
+    {
+        v1.x = -v1.x;
+        v1.y = -v1.y;
+        v1.z = -v1.z;
+        v1.w = -v1.w;
+        dot = -dot;
+    }
+
+    const f32 DOT_THRESHOLD = 0.9995f;
+    if (dot > DOT_THRESHOLD)
+    {
+        out_quat = (quat){
+            v0.x + ((v1.x - v0.x) * percentage),
+            v0.y + ((v1.y - v0.y) * percentage),
+            v0.z + ((v1.z - v0.z) * percentage),
+            v0.w + ((v1.w - v0.w) * percentage)};
+
+        return quat_normalize(out_quat);
+    }
+
+    f32 theta_0 = rcacos(dot);
+    f32 theta = theta_0 * percentage;
+    f32 sin_theta = rcsin(theta);
+    f32 sin_theta_0 = rcsin(theta_0);
+
+    f32 s0 = rccos(theta) - dot * sin_theta / sin_theta_0;
+    f32 s1 = sin_theta / sin_theta_0;
+
+    return (quat){
+        (v0.x * s0) + (v1.x * s1),
+        (v0.y * s0) + (v1.y * s1),
+        (v0.z * s0) + (v1.z * s1),
+        (v0.w * s0) + (v1.w * s1)};
+}
+
+/**
+ * ********************
+ * Degrees/Radian functions
+ * ********************
+ */
+
+/**
+ * @brief Converts the provided degrees to radians.
+ *
+ * @param degrees The degrees to convert to radians.
+ * @return The radians conversion.
+ */
+RCINLINE f32 deg_to_rad(f32 degrees)
+{
+    return degrees * RC_DEG2RAD_MULTIPLIER;
+}
+
+/**
+ * @brief Converts the provided radians to degrees.
+ *
+ * @param radians The radians to convert to degrees.
+ * @return The degrees conversion.
+ */
+RCINLINE f32 rad_to_deg(f32 radians)
+{
+    return radians * RC_RAD2DEG_MULTIPLIER;
+}
