@@ -4,7 +4,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-static b8 rand_seeded = FALSE;
+static b8 rand_seeded = false;
 
 /* The purpose of these is to avoid including math.h everywhere. */
 f32 rcsin(f32 x)
@@ -42,7 +42,7 @@ i32 rcrandom()
     if (!rand_seeded)
     {
         srand((u32)platform_get_absolute_time());
-        rand_seeded = TRUE;
+        rand_seeded = true;
     }
     return rand();
 }
@@ -52,7 +52,7 @@ i32 rcrandom_in_range(i32 min, i32 max)
     if (!rand_seeded)
     {
         srand((u32)platform_get_absolute_time());
-        rand_seeded = TRUE;
+        rand_seeded = true;
     }
 
     return (rand() % (max - min + 1)) + min;

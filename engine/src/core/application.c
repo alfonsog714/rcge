@@ -22,7 +22,7 @@ typedef struct application_state
     f64 last_time;
 } application_state;
 
-static b8 initialized = FALSE;
+static b8 initialized = false;
 static application_state app_state;
 
 // Event handlers
@@ -35,7 +35,7 @@ b8 application_create(game *game_inst)
     if (initialized)
     {
         RCERROR("application_create called more than once.");
-        return FALSE;
+        return false;
     }
 
     app_state.game_inst = game_inst;
@@ -44,13 +44,13 @@ b8 application_create(game *game_inst)
     initialize_logging();
     input_initialize();
 
-    app_state.is_running = TRUE;
-    app_state.is_suspended = FALSE;
+    app_state.is_running = true;
+    app_state.is_suspended = false;
 
     if (!event_initialize())
     {
         RCERROR("Event system failed to initialize. Application cannot continue.");
-        return FALSE;
+        return false;
     }
 
     event_register(EVENT_CODE_APPLICATION_QUIT, 0, application_on_event);
@@ -66,25 +66,25 @@ b8 application_create(game *game_inst)
             game_inst->app_config.start_width,
             game_inst->app_config.start_height))
     {
-        return FALSE;
+        return false;
     }
 
     if (!renderer_initialize(game_inst->app_config.name, &app_state.platform))
     {
         RCFATAL("Renderer failed to initialize. Aborting application.");
-        return FALSE;
+        return false;
     }
 
     if (!app_state.game_inst->initialize(app_state.game_inst))
     {
         RCFATAL("Game failed to initialize.");
-        return FALSE;
+        return false;
     }
 
     app_state.game_inst->on_resize(app_state.game_inst, app_state.width, app_state.height);
 
-    initialized = TRUE;
-    return TRUE;
+    initialized = true;
+    return true;
 }
 
 b8 application_run()
@@ -102,7 +102,7 @@ b8 application_run()
     {
         if (!platform_pump_messages(&app_state.platform))
         {
-            app_state.is_running = FALSE;
+            app_state.is_running = false;
         }
 
         if (!app_state.is_suspended)
@@ -115,14 +115,14 @@ b8 application_run()
             if (!app_state.game_inst->update(app_state.game_inst, (f32)delta))
             {
                 RCFATAL("Game update failed, shutting down.");
-                app_state.is_running = FALSE;
+                app_state.is_running = false;
                 break;
             }
 
             if (!app_state.game_inst->render(app_state.game_inst, (f32)delta))
             {
                 RCFATAL("Game render failed, shutting down.");
-                app_state.is_running = FALSE;
+                app_state.is_running = false;
                 break;
             }
 
@@ -141,7 +141,7 @@ b8 application_run()
             {
                 u64 remaining_ms = (remaining_seconds * 1000);
 
-                b8 limit_frames = FALSE;
+                b8 limit_frames = false;
                 if (remaining_ms > 0 && limit_frames)
                 {
                     platform_sleep(remaining_ms - 1);
@@ -162,7 +162,7 @@ b8 application_run()
         }
     }
 
-    app_state.is_running = FALSE;
+    app_state.is_running = false;
 
     event_unregister(EVENT_CODE_APPLICATION_QUIT, 0, application_on_event);
     event_unregister(EVENT_CODE_KEY_PRESSED, 0, application_on_key);
@@ -174,7 +174,7 @@ b8 application_run()
     renderer_shutdown();
     platform_shutdown(&app_state.platform);
 
-    return TRUE;
+    return true;
 }
 
 void application_get_framebuffer_size(u32 *width, u32 *height)
@@ -190,12 +190,12 @@ b8 application_on_event(u16 code, void *sender, void *listener_inst, event_conte
     case EVENT_CODE_APPLICATION_QUIT:
     {
         RCINFO("EVENT_CODE_APPLICATION_QUIT received, shutting application down.\n");
-        app_state.is_running = FALSE;
-        return TRUE;
+        app_state.is_running = false;
+        return true;
     }
     }
 
-    return FALSE;
+    return false;
 }
 
 b8 application_on_key(u16 code, void *sender, void *listener_inst, event_context context)
@@ -209,7 +209,7 @@ b8 application_on_key(u16 code, void *sender, void *listener_inst, event_context
             event_context data = {};
             event_fire(EVENT_CODE_APPLICATION_QUIT, 0, data);
 
-            return TRUE;
+            return true;
         }
         else if (key_code == KEY_A)
         {
@@ -233,7 +233,7 @@ b8 application_on_key(u16 code, void *sender, void *listener_inst, event_context
         }
     }
 
-    return FALSE;
+    return false;
 }
 
 b8 application_on_resized(u16 code, void *sender, void *listener_inst, event_context context)
@@ -253,15 +253,15 @@ b8 application_on_resized(u16 code, void *sender, void *listener_inst, event_con
             if (width == 0 || height == 0)
             {
                 RCINFO("Window has been minimized, suspending application.");
-                app_state.is_suspended = TRUE;
-                return TRUE;
+                app_state.is_suspended = true;
+                return true;
             }
             else
             {
                 if (app_state.is_suspended)
                 {
                     RCINFO("Window has been restored, resuming application.");
-                    app_state.is_suspended = FALSE;
+                    app_state.is_suspended = false;
                 }
 
                 app_state.game_inst->on_resize(app_state.game_inst, width, height);
@@ -270,5 +270,5 @@ b8 application_on_resized(u16 code, void *sender, void *listener_inst, event_con
         }
     }
 
-    return FALSE;
+    return false;
 }

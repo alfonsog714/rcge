@@ -24,7 +24,7 @@ typedef struct event_context
     } data;
 } event_context;
 
-// Should return TRUE if handled.
+// Should return true if handled.
 typedef b8 (*PFN_on_event)(u16 code, void *sender, void *listener_inst, event_context data);
 
 b8 event_initialize();
@@ -35,7 +35,7 @@ void event_shutdown();
  * @param code The event code to listen for.
  * @param listener A pointer to a listener instance. Can be 0 / NULL.
  * @param on_event The callback function pointer to be invoked when the event code is fired.
- * @returns TRUE if the vent is successfully registered; otherwise it returns FALSE.
+ * @returns true if the vent is successfully registered; otherwise it returns false.
  */
 RCAPI b8 event_register(u16 code, void *listener, PFN_on_event on_event);
 
@@ -44,7 +44,7 @@ RCAPI b8 event_register(u16 code, void *listener, PFN_on_event on_event);
  * @param code The event code to stop listening for.
  * @param listener Pointer to a listener instance. Can be NULL / 0.
  * @param on_event Callback pointer to be unregistered.
- * @returns TRUE if event is successfully unregistered. FALSE otherwise.
+ * @returns true if event is successfully unregistered. false otherwise.
  */
 RCAPI b8 event_unregister(u16 code, void *listener, PFN_on_event on_event);
 
@@ -53,7 +53,7 @@ RCAPI b8 event_unregister(u16 code, void *listener, PFN_on_event on_event);
  * @param code The event code to fire
  * @param sender A pointer to the sender. Can be NULL.
  * @param data The event data.
- * @returns TRUE if handled, FALSE otherwise.
+ * @returns true if handled, false otherwise.
  */
 RCAPI b8 event_fire(u16 code, void *sender, event_context context);
 

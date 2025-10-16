@@ -200,15 +200,15 @@ RCINLINE b8 vec2_compare(vec2 vec_0, vec2 vec_1, f32 tolerance)
 {
     if (rcabs(vec_0.x - vec_1.x) > tolerance)
     {
-        return FALSE;
+        return false;
     }
 
     if (rcabs(vec_0.y - vec_1.y) > tolerance)
     {
-        return FALSE;
+        return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 /**
@@ -476,20 +476,20 @@ RCINLINE b8 vec3_compare(vec3 vec_0, vec3 vec_1, f32 tolerance)
 {
     if (rcabs(vec_0.x - vec_1.x) > tolerance)
     {
-        return FALSE;
+        return false;
     }
 
     if (rcabs(vec_0.y - vec_1.y) > tolerance)
     {
-        return FALSE;
+        return false;
     }
 
     if (rcabs(vec_0.z - vec_1.z) > tolerance)
     {
-        return FALSE;
+        return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 /**

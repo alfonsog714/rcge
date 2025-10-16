@@ -20,20 +20,20 @@ typedef struct event_system_state
     event_code_entry registered[MAX_MESSAGE_CODES];
 } event_system_state;
 
-static b8 is_initialized = FALSE;
+static b8 is_initialized = false;
 static event_system_state state;
 
 b8 event_initialize()
 {
-    if (is_initialized == TRUE)
+    if (is_initialized == true)
     {
-        return FALSE;
+        return false;
     }
 
-    is_initialized = FALSE;
+    is_initialized = false;
     rczero_memory(&state, sizeof(state));
-    is_initialized = TRUE;
-    return TRUE;
+    is_initialized = true;
+    return true;
 }
 
 void event_shutdown()
@@ -50,9 +50,9 @@ void event_shutdown()
 
 b8 event_register(u16 code, void *listener, PFN_on_event on_event)
 {
-    if (is_initialized == FALSE)
+    if (is_initialized == false)
     {
-        return FALSE;
+        return false;
     }
 
     if (state.registered[code].events == 0)
@@ -66,7 +66,7 @@ b8 event_register(u16 code, void *listener, PFN_on_event on_event)
         if (state.registered[code].events[i].listener == listener)
         {
             // TODO: warn
-            return FALSE;
+            return false;
         }
     }
 
@@ -74,20 +74,20 @@ b8 event_register(u16 code, void *listener, PFN_on_event on_event)
     event.listener = listener;
     event.callback = on_event;
     darray_push(state.registered[code].events, event);
-    return TRUE;
+    return true;
 }
 
 b8 event_unregister(u16 code, void *listener, PFN_on_event on_event)
 {
-    if (is_initialized == FALSE)
+    if (is_initialized == false)
     {
-        return FALSE;
+        return false;
     }
 
     if (state.registered[code].events == 0)
     {
         // TODO: warn
-        return FALSE;
+        return false;
     }
 
     u64 registered_count = darray_length(state.registered[code].events);
@@ -98,23 +98,23 @@ b8 event_unregister(u16 code, void *listener, PFN_on_event on_event)
         {
             registered_event popped_event;
             darray_pop_at(state.registered[code].events, i, &popped_event);
-            return TRUE;
+            return true;
         }
     }
 
-    return FALSE;
+    return false;
 }
 
 b8 event_fire(u16 code, void *sender, event_context context)
 {
-    if (is_initialized == FALSE)
+    if (is_initialized == false)
     {
-        return FALSE;
+        return false;
     }
 
     if (state.registered[code].events == 0)
     {
-        return FALSE;
+        return false;
     }
 
     u64 registered_count = darray_length(state.registered[code].events);
@@ -124,9 +124,9 @@ b8 event_fire(u16 code, void *sender, event_context context)
         if (e.callback(code, sender, e.listener, context))
         {
             // This check ends once the first listener handles the message. It does not continue notifying other listeners.
-            return TRUE;
+            return true;
         }
     }
 
-    return FALSE;
+    return false;
 }

@@ -38,8 +38,8 @@ STATIC_ASSERT(sizeof(f64) == 8, "Expected f64 to be 8 bytes");
 STATIC_ASSERT(sizeof(b32) == 4, "Expected b32 to be 4 bytes");
 STATIC_ASSERT(sizeof(b8) == 1, "Expected b8 to be 1 byte");
 
-#define TRUE 1
-#define FALSE 0
+#define true 1
+#define false 0
 
 // Platform detection
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
