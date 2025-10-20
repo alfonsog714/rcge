@@ -50,6 +50,31 @@ void input_update(f64 delta_time)
 
 void input_process_key(keys key, b8 pressed)
 {
+    if (key == KEY_LALT)
+    {
+        RCINFO("Left alt pressed.");
+    }
+    else if (key == KEY_RALT)
+    {
+        RCINFO("Right alt pressed.");
+    }
+    else if (key == KEY_LCONTROL)
+    {
+        RCINFO("Left control pressed.");
+    }
+    else if (key == KEY_RCONTROL)
+    {
+        RCINFO("Right control pressed.");
+    }
+    else if (key == KEY_LSHIFT)
+    {
+        RCINFO("Left shift pressed.");
+    }
+    else if (key == KEY_RSHIFT)
+    {
+        RCINFO("Right shift pressed.");
+    }
+
     if (state.keyboard_current.keys[key] != pressed)
     {
         state.keyboard_current.keys[key] = pressed;
