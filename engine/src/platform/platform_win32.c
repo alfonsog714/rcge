@@ -17,6 +17,8 @@
 #include <vulkan/vulkan_win32.h>
 #include "renderer/vulkan/vulkan_types.inl"
 
+#define WIN_KEY_IS_PRESSED 0x8000
+
 typedef struct internal_state
 {
     HINSTANCE h_instance;
@@ -269,33 +271,33 @@ LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param, LPARA
 
         if (w_param == VK_MENU)
         {
-            if (GetKeyState(VK_RMENU) & 0x8000)
+            if (GetKeyState(VK_RMENU) & WIN_KEY_IS_PRESSED)
             {
                 key = KEY_RALT;
             }
-            else if (GetKeyState(VK_LMENU) & 0x8000)
+            else if (GetKeyState(VK_LMENU) & WIN_KEY_IS_PRESSED)
             {
                 key = KEY_LALT;
             }
         }
         else if (w_param == VK_SHIFT)
         {
-            if (GetKeyState(VK_RSHIFT) & 0x8000)
+            if (GetKeyState(VK_RSHIFT) & WIN_KEY_IS_PRESSED)
             {
                 key = KEY_RSHIFT;
             }
-            else if (GetKeyState(VK_LSHIFT) & 0x8000)
+            else if (GetKeyState(VK_LSHIFT) & WIN_KEY_IS_PRESSED)
             {
                 key = KEY_LSHIFT;
             }
         }
         else if (w_param == VK_CONTROL)
         {
-            if (GetKeyState(VK_RCONTROL) & 0x8000)
+            if (GetKeyState(VK_RCONTROL) & WIN_KEY_IS_PRESSED)
             {
                 key = KEY_RCONTROL;
             }
-            else if (GetKeyState(VK_LCONTROL) & 0x8000)
+            else if (GetKeyState(VK_LCONTROL) & WIN_KEY_IS_PRESSED)
             {
                 key = KEY_LCONTROL;
             }
