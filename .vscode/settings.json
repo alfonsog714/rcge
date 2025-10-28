@@ -5,7 +5,8 @@
         "logger.h": "c",
         "platform.h": "c",
         "vector": "c",
-        "xstring": "c"
+        "xstring": "c",
+        "expected": "cpp"
     },
     "C_Cpp.default.compilerPath": "C:/Program Files/LLVM/bin/clang.exe",
     "C_Cpp.errorSquiggles": "enabled"
